@@ -1,5 +1,6 @@
 from datetime import datetime
 from uuid import UUID, uuid4
+from typing import Optional
 from sqlmodel import Field, Session, SQLModel, create_engine
 
 
@@ -9,7 +10,7 @@ class ReservationModel(SQLModel, table=True):
     party_size: int = Field(ge=1)
     reservation_date: datetime
     created_at: datetime
-    confirmed: bool = False
+    confirmed_at: Optional[datetime] = Field(default=None, nullable=True)
     restaurant_id: int
 
 engine = create_engine("sqlite:///database.db")

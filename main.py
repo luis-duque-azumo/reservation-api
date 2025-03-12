@@ -24,7 +24,6 @@ def create_reservation(
         customer_name=reservation.customer_name,
         party_size=reservation.party_size,
         reservation_date=reservation.reservation_date,
-        confirmed=reservation.confirmed,
         restaurant_id=reservation.restaurant_id,
     )
     
@@ -55,13 +54,13 @@ def confirm_reservation(
             detail=f"Reservation with ID {reservation_id} not found"
         )
     
-    if reservation_model.confirmed:
+    if reservation_model.confirmed_at:
         restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
         response_data = reservation_model.model_dump()
         response_data["restaurant"] = restaurant_data or {}
         return Reservation.model_validate(response_data)
     
-    reservation_model.confirmed = True
+    reservation_model.confirmed_at = datetime.now(timezone.utc)
     session.add(reservation_model)
     session.commit()
     session.refresh(reservation_model)
