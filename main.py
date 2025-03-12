@@ -1,7 +1,7 @@
 from typing import List
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, status, Depends
-from uuid import uuid4, UUID
+from uuid import UUID
 from sqlmodel import Session, select
 from schemas import Reservation, ReservationCreate
 from database import get_database, ReservationModel
