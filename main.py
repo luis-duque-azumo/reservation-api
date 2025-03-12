@@ -1,65 +1,68 @@
 from typing import List, Dict
 from datetime import datetime, timezone
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Depends
 from uuid import uuid4, UUID
-
-from schemas import Reservation, ReservationCreate
-
+from sqlmodel import Session, select
+from schemas import Reservation
+from database import get_database, ReservationModel
 app = FastAPI(title="Reservation API")
 
 # In-memory database
 db: Dict[UUID, Reservation] = {}
 
 @app.post("/reservations/", response_model=Reservation, status_code=status.HTTP_201_CREATED, tags=["reservations"])
-def create_reservation(reservation: ReservationCreate) -> Reservation:
+def create_reservation(reservation: Reservation, session: Session = Depends(get_database)) -> Reservation:
     """
     Create a new restaurant reservation.
     """
-    reservation_id = uuid4()
-    reservation_dict = reservation.model_dump()
-    
-    new_reservation = Reservation(
-        id=reservation_id,
+    reservation = Reservation(
+        id=uuid4(),
         created_at=datetime.now(timezone.utc),
-        **reservation_dict
+        customer_name=reservation.customer_name,
+        party_size=reservation.party_size,
+        reservation_date=reservation.reservation_date
     )
-    
-    db[reservation_id] = new_reservation
-    return new_reservation
+    reservation_model = ReservationModel(**reservation.model_dump())
+    session.add(reservation_model)
+    session.commit()
+    session.refresh(reservation_model)
+    return reservation
 
 @app.put("/reservations/{reservation_id}/confirm", response_model=Reservation, tags=["reservations"])
-def confirm_reservation(reservation_id: UUID) -> Reservation:
+def confirm_reservation(reservation_id: UUID, session: Session = Depends(get_database)) -> Reservation:
     """
     Confirm an existing reservation by ID.
     """
-    if reservation_id not in db:
+    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.id == reservation_id)).one_or_none()
+    if reservation_model is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Reservation with ID {reservation_id} not found"
         )
     
-    reservation = db[reservation_id]
+    reservation = Reservation(**reservation_model.model_dump())
     reservation.confirmed = True
-    db[reservation_id] = reservation
     
     return reservation
 
 @app.get("/reservations/", response_model=List[Reservation], tags=["reservations"])
-def list_reservations() -> List[Reservation]:
+def list_reservations(session: Session = Depends(get_database)) -> List[Reservation]:
     """
     List all reservations.
     """
-    return list(db.values())
+    reservation_models = session.exec(select(ReservationModel)).all()
+    return [Reservation(**reservation_model.model_dump()) for reservation_model in reservation_models]
 
 @app.get("/reservations/{reservation_id}", response_model=Reservation, tags=["reservations"])
-def get_reservation(reservation_id: UUID) -> Reservation:
+def get_reservation(reservation_id: UUID, session: Session = Depends(get_database)) -> Reservation:
     """
     Get a specific reservation by ID.
     """
-    if reservation_id not in db:
+    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.id == reservation_id)).one_or_none()
+    if reservation_model is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Reservation with ID {reservation_id} not found"
         )
     
-    return db[reservation_id]
+    return Reservation(**reservation_model.model_dump())
