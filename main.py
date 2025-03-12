@@ -39,6 +39,9 @@ def confirm_reservation(reservation_id: UUID, session: Session = Depends(get_dat
             detail=f"Reservation with ID {reservation_id} not found"
         )
     
+    if reservation_model.confirmed:
+        return Reservation(**reservation_model.model_dump())
+    
     reservation_model.confirmed = True
     session.add(reservation_model)
     session.commit()
