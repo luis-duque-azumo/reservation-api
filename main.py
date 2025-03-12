@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, status, Depends
 from uuid import uuid4, UUID
@@ -7,8 +7,6 @@ from schemas import Reservation
 from database import get_database, ReservationModel
 app = FastAPI(title="Reservation API")
 
-# In-memory database
-db: Dict[UUID, Reservation] = {}
 
 @app.post("/reservations/", response_model=Reservation, status_code=status.HTTP_201_CREATED, tags=["reservations"])
 def create_reservation(reservation: Reservation, session: Session = Depends(get_database)) -> Reservation:
@@ -40,10 +38,12 @@ def confirm_reservation(reservation_id: UUID, session: Session = Depends(get_dat
             detail=f"Reservation with ID {reservation_id} not found"
         )
     
-    reservation = Reservation(**reservation_model.model_dump())
-    reservation.confirmed = True
+    reservation_model.confirmed = True
+    session.add(reservation_model)
+    session.commit()
+    session.refresh(reservation_model)
     
-    return reservation
+    return Reservation(**reservation_model.model_dump())
 
 @app.get("/reservations/", response_model=List[Reservation], tags=["reservations"])
 def list_reservations(session: Session = Depends(get_database)) -> List[Reservation]:
