@@ -21,3 +21,9 @@ class Reservation(BaseModel):
     confirmed: bool = False
     class Config:
         from_attributes = True
+
+class Restaurant(BaseModel):
+    id: int
+    name: str
+    cuisine: str
+    price_range: str

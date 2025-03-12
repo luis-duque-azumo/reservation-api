@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "name": "Premium Asian restaurant",
+        "cuisine": "Asian",
+        "price_range": "premium"
+    },
+    {
+        "id": 2,
+        "name": "Mid-range Italian restaurant",
+        "cuisine": "Italian",
+        "price_range": "mid-range"
+    },
+    {
+        "id": 3,
+        "name": "Budget-friendly Asian restaurant",
+        "cuisine": "Asian",
+        "price_range": "budget-friendly"
+    },
+    {
+        "id": 4,
+        "name": "Premium steakhouse",
+        "cuisine": "steakhouse",
+        "price_range": "premium"
+    },
+    {
+        "id": 5,
+        "name": "Mid-range seafood restaurant",
+        "cuisine": "seafood",
+        "price_range": "mid-range"
+    },
+    {
+        "id": 6,
+        "name": "Mid-range Asian restaurant",
+        "cuisine": "Asian",
+        "price_range": "mid-range"
+    },
+    {
+        "id": 7,
+        "name": "Premium Italian restaurant",
+        "cuisine": "Italian",
+        "price_range": "Premium"
+    },
+    {
+        "id": 8,
+        "name": "Budget-friendly seafood restaurant",
+        "cuisine": "seafood",
+        "price_range": "budget-friendly"
+    },
+    {
+        "id": 9,
+        "name": "Budget-friendly Italian restaurant",
+        "cuisine": "Italian",
+        "price_range": "budget-friendly"
+    },
+    {
+        "id": 10,
+        "name": "Mid-range steakhouse",
+        "cuisine": "steakhouse",
+        "price_range": "mid-range"
+    },
+    {
+        "id": 11,
+        "name": "Budget-friendly steakhouse",
+        "cuisine": "steakhouse",
+        "price_range": "budget-friendly"
+    },
+    {
+        "id": 12,
+        "name": "Premium seafood restaurant",
+        "cuisine": "Seafood",
+        "price_range": "Premium"
+    }
+]

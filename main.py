@@ -3,9 +3,10 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, status, Depends
 from uuid import UUID
 from sqlmodel import Session, select
-from schemas import Reservation, ReservationCreate
+from schemas import Reservation, ReservationCreate, Restaurant
 from database import get_database, ReservationModel
 from auth import get_api_key
+import json
 
 app = FastAPI(title="Reservation API")
 
@@ -88,3 +89,14 @@ def get_reservation(
         )
     
     return Reservation(**reservation_model.model_dump())
+
+@app.get("/restaurants/", response_model=List[Restaurant], tags=["restaurants"])
+def list_restaurants(
+    api_key: str = Depends(get_api_key)
+) -> List[Restaurant]:
+    """
+    List all restaurants from the restaurants.json file.
+    """
+    with open("restaurants.json", "r") as f:
+        restaurants_data = json.load(f)
+    return restaurants_data
