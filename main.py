@@ -25,7 +25,6 @@ def create_reservation(reservation: ReservationCreate, session: Session = Depend
     session.commit()
     session.refresh(reservation_model)
     
-    # Convert to Pydantic model for response
     return Reservation.model_validate(reservation_model)
 
 @app.put("/reservations/{reservation_id}/confirm", response_model=Reservation, tags=["reservations"])
