@@ -5,11 +5,18 @@ from uuid import UUID
 from sqlmodel import Session, select
 from schemas import Reservation, ReservationCreate
 from database import get_database, ReservationModel
+from auth import get_api_key
+
 app = FastAPI(title="Reservation API")
 
 
+
 @app.post("/reservations/", response_model=Reservation, status_code=status.HTTP_201_CREATED, tags=["reservations"])
-def create_reservation(reservation: ReservationCreate, session: Session = Depends(get_database)) -> Reservation:
+def create_reservation(
+    reservation: ReservationCreate, 
+    session: Session = Depends(get_database),
+    api_key: str = Depends(get_api_key)
+) -> Reservation:
     """
     Create a new restaurant reservation.
     """
@@ -28,7 +35,11 @@ def create_reservation(reservation: ReservationCreate, session: Session = Depend
     return Reservation.model_validate(reservation_model)
 
 @app.put("/reservations/{reservation_id}/confirm", response_model=Reservation, tags=["reservations"])
-def confirm_reservation(reservation_id: UUID, session: Session = Depends(get_database)) -> Reservation:
+def confirm_reservation(
+    reservation_id: UUID, 
+    session: Session = Depends(get_database),
+    api_key: str = Depends(get_api_key)
+) -> Reservation:
     """
     Confirm an existing reservation by ID.
     """
@@ -50,7 +61,10 @@ def confirm_reservation(reservation_id: UUID, session: Session = Depends(get_dat
     return Reservation(**reservation_model.model_dump())
 
 @app.get("/reservations/", response_model=List[Reservation], tags=["reservations"])
-def list_reservations(session: Session = Depends(get_database)) -> List[Reservation]:
+def list_reservations(
+    session: Session = Depends(get_database),
+    api_key: str = Depends(get_api_key)
+) -> List[Reservation]:
     """
     List all reservations.
     """
@@ -58,7 +72,11 @@ def list_reservations(session: Session = Depends(get_database)) -> List[Reservat
     return [Reservation(**reservation_model.model_dump()) for reservation_model in reservation_models]
 
 @app.get("/reservations/{reservation_id}", response_model=Reservation, tags=["reservations"])
-def get_reservation(reservation_id: UUID, session: Session = Depends(get_database)) -> Reservation:
+def get_reservation(
+    reservation_id: UUID, 
+    session: Session = Depends(get_database),
+    api_key: str = Depends(get_api_key)
+) -> Reservation:
     """
     Get a specific reservation by ID.
     """
