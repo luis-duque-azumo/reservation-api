@@ -1,73 +1,73 @@
 [
     {
         "id": 1,
-        "name": "Premium Asian restaurant",
+        "name": "Sakura Sushi House",
         "cuisine": "Asian",
         "price_range": "premium"
     },
     {
         "id": 2,
-        "name": "Mid-range Italian restaurant",
+        "name": "Trattoria Bella Italia",
         "cuisine": "Italian",
         "price_range": "mid-range"
     },
     {
         "id": 3,
-        "name": "Budget-friendly Asian restaurant",
+        "name": "Noodle Nirvana",
         "cuisine": "Asian",
         "price_range": "budget-friendly"
     },
     {
         "id": 4,
-        "name": "Premium steakhouse",
+        "name": "Steakhouse Supreme",
         "cuisine": "steakhouse",
         "price_range": "premium"
     },
     {
         "id": 5,
-        "name": "Mid-range seafood restaurant",
+        "name": "Ocean's Catch",
         "cuisine": "seafood",
         "price_range": "mid-range"
     },
     {
         "id": 6,
-        "name": "Mid-range Asian restaurant",
+        "name": "Bamboo Bistro",
         "cuisine": "Asian",
         "price_range": "mid-range"
     },
     {
         "id": 7,
-        "name": "Premium Italian restaurant",
+        "name": "Ristorante Roma",
         "cuisine": "Italian",
         "price_range": "Premium"
     },
     {
         "id": 8,
-        "name": "Budget-friendly seafood restaurant",
+        "name": "Seaside Shack",
         "cuisine": "seafood",
         "price_range": "budget-friendly"
     },
     {
         "id": 9,
-        "name": "Budget-friendly Italian restaurant",
+        "name": "Pasta Palace",
         "cuisine": "Italian",
         "price_range": "budget-friendly"
     },
     {
         "id": 10,
-        "name": "Mid-range steakhouse",
+        "name": "Grill & Chill",
         "cuisine": "steakhouse",
         "price_range": "mid-range"
     },
     {
         "id": 11,
-        "name": "Budget-friendly steakhouse",
+        "name": "Budget Bites Steakhouse",
         "cuisine": "steakhouse",
         "price_range": "budget-friendly"
     },
     {
         "id": 12,
-        "name": "Premium seafood restaurant",
+        "name": "Poseidon's Plate",
         "cuisine": "Seafood",
         "price_range": "Premium"
     }
