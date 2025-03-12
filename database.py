@@ -10,6 +10,7 @@ class ReservationModel(SQLModel, table=True):
     reservation_date: datetime
     created_at: datetime
     confirmed: bool = False
+    restaurant_id: int
 
 engine = create_engine("sqlite:///database.db")
 

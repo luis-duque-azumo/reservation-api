@@ -3,14 +3,12 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, status, Depends
 from uuid import UUID
 from sqlmodel import Session, select
+from restaurants import get_restaurant_by_id, get_restaurants_data
 from schemas import Reservation, ReservationCreate, Restaurant
 from database import get_database, ReservationModel
 from auth import get_api_key
-import json
 
 app = FastAPI(title="Reservation API")
-
-
 
 @app.post("/reservations/", response_model=Reservation, status_code=status.HTTP_201_CREATED, tags=["reservations"])
 def create_reservation(
@@ -26,14 +24,20 @@ def create_reservation(
         customer_name=reservation.customer_name,
         party_size=reservation.party_size,
         reservation_date=reservation.reservation_date,
-        confirmed=reservation.confirmed
+        confirmed=reservation.confirmed,
+        restaurant_id=reservation.restaurant_id,
     )
     
     session.add(reservation_model)
     session.commit()
     session.refresh(reservation_model)
     
-    return Reservation.model_validate(reservation_model)
+    restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
+    
+    response_data = reservation_model.model_dump()
+    response_data["restaurant"] = restaurant_data or {}
+    
+    return Reservation.model_validate(response_data)
 
 @app.put("/reservations/{reservation_id}/confirm", response_model=Reservation, tags=["reservations"])
 def confirm_reservation(
@@ -52,14 +56,21 @@ def confirm_reservation(
         )
     
     if reservation_model.confirmed:
-        return Reservation(**reservation_model.model_dump())
+        restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
+        response_data = reservation_model.model_dump()
+        response_data["restaurant"] = restaurant_data or {}
+        return Reservation.model_validate(response_data)
     
     reservation_model.confirmed = True
     session.add(reservation_model)
     session.commit()
     session.refresh(reservation_model)
     
-    return Reservation(**reservation_model.model_dump())
+    restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
+    response_data = reservation_model.model_dump()
+    response_data["restaurant"] = restaurant_data or {}
+    
+    return Reservation.model_validate(response_data)
 
 @app.get("/reservations/", response_model=List[Reservation], tags=["reservations"])
 def list_reservations(
@@ -70,7 +81,15 @@ def list_reservations(
     List all reservations.
     """
     reservation_models = session.exec(select(ReservationModel)).all()
-    return [Reservation(**reservation_model.model_dump()) for reservation_model in reservation_models]
+    
+    reservations: List[Reservation] = []
+    for reservation_model in reservation_models:
+        restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
+        response_data = reservation_model.model_dump()
+        response_data["restaurant"] = restaurant_data or {}
+        reservations.append(Reservation.model_validate(response_data))
+    
+    return reservations
 
 @app.get("/reservations/{reservation_id}", response_model=Reservation, tags=["reservations"])
 def get_reservation(
@@ -88,7 +107,11 @@ def get_reservation(
             detail=f"Reservation with ID {reservation_id} not found"
         )
     
-    return Reservation(**reservation_model.model_dump())
+    restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
+    response_data = reservation_model.model_dump()
+    response_data["restaurant"] = restaurant_data or {}
+    
+    return Reservation.model_validate(response_data)
 
 @app.get("/restaurants/", response_model=List[Restaurant], tags=["restaurants"])
 def list_restaurants(
@@ -97,6 +120,5 @@ def list_restaurants(
     """
     List all restaurants from the restaurants.json file.
     """
-    with open("restaurants.json", "r") as f:
-        restaurants_data = json.load(f)
-    return restaurants_data
+    restaurants_data = get_restaurants_data()
+    return [Restaurant.model_validate(restaurant) for restaurant in restaurants_data]
