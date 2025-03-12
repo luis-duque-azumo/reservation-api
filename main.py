@@ -3,28 +3,30 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, status, Depends
 from uuid import uuid4, UUID
 from sqlmodel import Session, select
-from schemas import Reservation
+from schemas import Reservation, ReservationCreate
 from database import get_database, ReservationModel
 app = FastAPI(title="Reservation API")
 
 
 @app.post("/reservations/", response_model=Reservation, status_code=status.HTTP_201_CREATED, tags=["reservations"])
-def create_reservation(reservation: Reservation, session: Session = Depends(get_database)) -> Reservation:
+def create_reservation(reservation: ReservationCreate, session: Session = Depends(get_database)) -> Reservation:
     """
     Create a new restaurant reservation.
     """
-    reservation = Reservation(
-        id=uuid4(),
+    reservation_model = ReservationModel(
         created_at=datetime.now(timezone.utc),
         customer_name=reservation.customer_name,
         party_size=reservation.party_size,
-        reservation_date=reservation.reservation_date
+        reservation_date=reservation.reservation_date,
+        confirmed=reservation.confirmed
     )
-    reservation_model = ReservationModel(**reservation.model_dump())
+    
     session.add(reservation_model)
     session.commit()
     session.refresh(reservation_model)
-    return reservation
+    
+    # Convert to Pydantic model for response
+    return Reservation.model_validate(reservation_model)
 
 @app.put("/reservations/{reservation_id}/confirm", response_model=Reservation, tags=["reservations"])
 def confirm_reservation(reservation_id: UUID, session: Session = Depends(get_database)) -> Reservation:

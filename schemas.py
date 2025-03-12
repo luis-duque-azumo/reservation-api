@@ -6,6 +6,12 @@ from datetime import datetime
 
 
 
+class ReservationCreate(BaseModel):
+    customer_name: str
+    party_size: int = Field(gt=0)
+    reservation_date: datetime
+    confirmed: bool = False
+
 class Reservation(BaseModel):
     id: UUID
     customer_name: str
