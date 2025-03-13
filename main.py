@@ -1,5 +1,6 @@
 from typing import List
 from datetime import datetime, timezone
+from sqlalchemy import func
 from fastapi import FastAPI, HTTPException, status, Depends
 from uuid import UUID
 from sqlmodel import Session, select
@@ -47,7 +48,7 @@ def confirm_reservation(
     """
     Confirm an existing reservation by code.
     """
-    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.code == reservation_code)).one_or_none()
+    reservation_model = session.exec(select(ReservationModel).where(func.lower(ReservationModel.code) == reservation_code.lower())).one_or_none()
     if reservation_model is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -99,7 +100,7 @@ def get_reservation(
     """
     Get a specific reservation by CODE.
     """
-    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.code == reservation_code)).one_or_none()
+    reservation_model = session.exec(select(ReservationModel).where(func.lower(ReservationModel.code) == reservation_code.lower())).one_or_none()
     if reservation_model is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
