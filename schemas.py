@@ -19,6 +19,7 @@ class ReservationCreate(BaseModel):
 
 class Reservation(BaseModel):
     id: UUID
+    code: str
     customer_name: str
     party_size: int = Field(gt=0)
     reservation_date: datetime
