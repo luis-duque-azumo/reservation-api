@@ -38,20 +38,20 @@ def create_reservation(
     
     return Reservation.model_validate(response_data)
 
-@app.put("/reservations/{reservation_id}/confirm", response_model=Reservation, tags=["reservations"])
+@app.put("/reservations/{reservation_code}/confirm", response_model=Reservation, tags=["reservations"])
 def confirm_reservation(
-    reservation_id: UUID, 
+    reservation_code: str, 
     session: Session = Depends(get_database),
     api_key: str = Depends(get_api_key)
 ) -> Reservation:
     """
-    Confirm an existing reservation by ID.
+    Confirm an existing reservation by code.
     """
-    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.id == reservation_id)).one_or_none()
+    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.code == reservation_code)).one_or_none()
     if reservation_model is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Reservation with ID {reservation_id} not found"
+            detail=f"Reservation with CODE {reservation_code} not found"
         )
     
     if reservation_model.confirmed_at:
@@ -90,20 +90,20 @@ def list_reservations(
     
     return reservations
 
-@app.get("/reservations/{reservation_id}", response_model=Reservation, tags=["reservations"])
+@app.get("/reservations/{reservation_code}", response_model=Reservation, tags=["reservations"])
 def get_reservation(
-    reservation_id: UUID, 
+    reservation_code: str, 
     session: Session = Depends(get_database),
     api_key: str = Depends(get_api_key)
 ) -> Reservation:
     """
-    Get a specific reservation by ID.
+    Get a specific reservation by CODE.
     """
-    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.id == reservation_id)).one_or_none()
+    reservation_model = session.exec(select(ReservationModel).where(ReservationModel.code == reservation_code)).one_or_none()
     if reservation_model is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Reservation with ID {reservation_id} not found"
+            detail=f"Reservation with CODE {reservation_code} not found"
         )
     
     restaurant_data = get_restaurant_by_id(reservation_model.restaurant_id)
