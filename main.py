@@ -1,7 +1,6 @@
 from typing import List
 from datetime import datetime, timezone
-from fastapi import FastAPI, HTTPException, status, Depends
-from uuid import UUID
+from fastapi import FastAPI, HTTPException, status, Depends, Query
 from sqlmodel import Session, select
 from restaurants import get_restaurant_by_id, get_restaurants_data
 from schemas import Reservation, ReservationCreate, Restaurant
@@ -114,10 +113,23 @@ def get_reservation(
 
 @app.get("/restaurants/", response_model=List[Restaurant], tags=["restaurants"])
 def list_restaurants(
-    api_key: str = Depends(get_api_key)
+    api_key: str = Depends(get_api_key),
+    cuisine: str = Query(None, description="Filter by cuisine"),
+    price_range: str = Query(None, description="Filter by price range")
 ) -> List[Restaurant]:
     """
     List all restaurants from the restaurants.json file.
     """
     restaurants_data = get_restaurants_data()
+    
+    # Filter by cuisine if provided, case-insensitive
+    if cuisine:
+        cuisine_lower = cuisine.lower()
+        restaurants_data = [restaurant for restaurant in restaurants_data if restaurant.get("cuisine", "").lower() == cuisine_lower]
+    
+    # Filter by price range if provided, case-insensitive
+    if price_range:
+        price_range_lower = price_range.lower()
+        restaurants_data = [restaurant for restaurant in restaurants_data if restaurant.get("price_range", "").lower() == price_range_lower]
+    
     return [Restaurant.model_validate(restaurant) for restaurant in restaurants_data]

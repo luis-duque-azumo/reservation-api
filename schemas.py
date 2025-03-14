@@ -14,7 +14,7 @@ class Restaurant(BaseModel):
 class ReservationCreate(BaseModel):
     customer_name: str
     party_size: int = Field(gt=0)
-    reservation_date: datetime
+    reservation_date: str
     restaurant_id: int
 
 class Reservation(BaseModel):
@@ -22,7 +22,7 @@ class Reservation(BaseModel):
     code: str
     customer_name: str
     party_size: int = Field(gt=0)
-    reservation_date: datetime
+    reservation_date: str
     created_at: datetime
     confirmed_at: Optional[datetime] = Field(default=None, nullable=True)
     restaurant: Restaurant

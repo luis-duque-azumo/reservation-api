@@ -39,7 +39,7 @@
         "id": 7,
         "name": "Ristorante Roma",
         "cuisine": "Italian",
-        "price_range": "Premium"
+        "price_range": "premium"
     },
     {
         "id": 8,
@@ -68,7 +68,7 @@
     {
         "id": 12,
         "name": "Poseidon's Plate",
-        "cuisine": "Seafood",
-        "price_range": "Premium"
+        "cuisine": "seafood",
+        "price_range": "premium"
     }
 ]

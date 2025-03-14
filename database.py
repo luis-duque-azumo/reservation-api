@@ -11,7 +11,7 @@ class ReservationModel(SQLModel, table=True):
     code: str = Field(default_factory=generate_reservation_code, unique=True, index=True)
     customer_name: str
     party_size: int = Field(ge=1)
-    reservation_date: datetime
+    reservation_date: str
     created_at: datetime
     confirmed_at: Optional[datetime] = Field(default=None, nullable=True)
     restaurant_id: int
